@@ -1,8 +1,8 @@
 import { Sequelize } from "sequelize";
-import Category, { CategoryInterface, categoryModelInit } from "./models/category";
-import TimeEvent, { timeEventModelInit, TimeEventInterface } from "./models/time-event";
-import User, { UserInterface, userModelInit } from "./models/user";
-import crypto from "crypto";
+import { categoryModelInit } from "./models/category";
+import { timeEventModelInit } from "./models/time-event";
+import { unverifiedUserInit } from "./models/unverified-user";
+import { userModelInit } from "./models/user";
 
 let sequelize: Sequelize;
 
@@ -22,37 +22,12 @@ export default {
       process.exit(1);
     }
 
+    unverifiedUserInit(sequelize);
     userModelInit(sequelize);
-    categoryModelInit(sequelize); 
-    timeEventModelInit(sequelize); 
+    categoryModelInit(sequelize);
+    timeEventModelInit(sequelize);
 
     await sequelize.sync({});
-
-    const user: UserInterface = {
-      uuid: crypto.randomUUID(),
-      email: "tuukka@tuukka.fi",
-    };
-
-    const category: CategoryInterface = {
-      uuid: crypto.randomUUID(),
-      name: "test-category",
-      user: user.uuid ?? "rip",
-      icon: "icon",
-      color: "color"
-    };
-
-    const event: TimeEventInterface = {
-      uuid: crypto.randomUUID(),
-      title: "title",
-      category: category.uuid ?? "rip1",
-      user: user.uuid ?? "rip2",
-      start: 0,
-      end: 0
-    };
-
-    await User.create(user);
-    await Category.create(category); 
-    await TimeEvent.create(event); 
 
     return sequelize;
   }

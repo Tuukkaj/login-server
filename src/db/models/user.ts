@@ -1,3 +1,4 @@
+import { PassportCountryCode } from "express-validator/src/options";
 import { Model, ModelAttributes, DataTypes, Sequelize } from "sequelize";
 
 const modelName = "user";
@@ -14,6 +15,10 @@ const columns: ModelAttributes = {
   email: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+  password: {
+    type: DataTypes.STRING, 
+    allowNull: false
   }
 };
 
@@ -28,6 +33,7 @@ export const userModelInit = (sequelize: Sequelize) => {
 export interface UserInterface {
   uuid: string
   email: string
+  password: string
 }
 
 export default User;
