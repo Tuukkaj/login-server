@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { categoryModelInit } from "./models/category";
+import { passwordResetInit } from "./models/password-reset";
 import { timeEventModelInit } from "./models/time-event";
 import { unverifiedUserInit } from "./models/unverified-user";
 import { userModelInit } from "./models/user";
@@ -22,6 +23,7 @@ export default {
       process.exit(1);
     }
 
+    passwordResetInit(sequelize);
     unverifiedUserInit(sequelize);
     userModelInit(sequelize);
     categoryModelInit(sequelize);

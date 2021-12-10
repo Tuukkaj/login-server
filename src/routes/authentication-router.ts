@@ -1,10 +1,11 @@
 import express from "express";
-import { body, validationResult } from "express-validator";
+import { body, validationResult, param } from "express-validator";
 import UnverifiedUser, { UnverifiedUserInterface } from "../db/models/unverified-user";
 import crypto from "crypto";
 import EmailService from "../services/email-service";
 import bcrypt from "bcrypt";
 import User, { UserInterface } from "../db/models/user";
+import PasswordReset, { PasswordResetInterface } from "../db/models/password-reset";
 
 const authenticationRouter = express.Router();
 
@@ -70,8 +71,30 @@ authenticationRouter.get("/sign/verify/:token",
     return res.status(200).send();
   });
 
-authenticationRouter.post("/sign/test",
+authenticationRouter.get("/forgot/:email",
+  async (req, res) => {
+    const { email } = req.params;
 
+    const passwordReset: PasswordResetInterface = {
+      email: email,
+      token: crypto.randomUUID(),
+      uuid: crypto.randomUUID()
+    };
+
+    try {
+      await PasswordReset.create(passwordReset);
+    } catch (e) {
+      console.error("Failed to reset password", e);
+      return res.status(200);
+
+    }
+
+    return res.status(200);
+  });
+
+authenticationRouter.post("/sign/test",
+  body("email").isEmail().normalizeEmail(),
+  body("password").isLength({ min: 8 }),
   async (req, res) => {
     const { email, password } = req.body;
 
@@ -82,7 +105,7 @@ authenticationRouter.post("/sign/test",
     });
 
     if (!user) {
-      return res.status(401).send(); 
+      return res.status(401).send();
     }
 
     try {
@@ -90,9 +113,9 @@ authenticationRouter.post("/sign/test",
         return res.status(200).send("Login OK");
       }
 
-      return res.status(401).send(); 
+      return res.status(401).send();
     } catch (e) {
-      return res.status(401).send(); 
+      return res.status(401).send();
     }
   });
 
