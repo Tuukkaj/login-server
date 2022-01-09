@@ -68,7 +68,7 @@ authenticationRouter.get("/sign/verify/:token",
 
     User.create(user);
 
-    return res.status(200).send();
+    return res.status(200).json({result: "ok"});
   });
 
 authenticationRouter.get("/forgot/:email",
