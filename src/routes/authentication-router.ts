@@ -1,5 +1,5 @@
 import express from "express";
-import { body, validationResult, param } from "express-validator";
+import { body, validationResult } from "express-validator";
 import UnverifiedUser, { UnverifiedUserInterface } from "../db/models/unverified-user";
 import crypto from "crypto";
 import EmailService from "../services/email-service";
@@ -16,7 +16,7 @@ authenticationRouter.post("/sign",
   async (req, res) => {
     const errs = validationResult(req);
     if (!errs.isEmpty()) {
-      return res.status(400).json({ errors: errs });
+      return res.status(400).json({ errors: errs.array() });
     }
 
     const { email, password } = req.body;
@@ -48,6 +48,11 @@ authenticationRouter.post("/sign",
 
 authenticationRouter.get("/sign/verify/:token",
   async (req, res) => {
+    const errs = validationResult(req);
+    if (!errs.isEmpty()) {
+      return res.status(400).json({ errors: errs.array() });
+    }
+
     const { token } = req.params;
 
     const verifiedUser = await UnverifiedUser.findOne({
@@ -79,6 +84,11 @@ authenticationRouter.get("/sign/verify/:token",
 
 authenticationRouter.get("/forgot/:email",
   async (req, res) => {
+    const errs = validationResult(req);
+    if (!errs.isEmpty()) {
+      return res.status(400).json({ errors: errs.array() });
+    }
+
     const { email } = req.params;
 
     const passwordReset: PasswordResetInterface = {
@@ -117,6 +127,11 @@ authenticationRouter.post("/login",
   body("email").isEmail().normalizeEmail(),
   body("password").isLength({ min: 8 }),
   async (req, res) => {
+    const errs = validationResult(req);
+    if (!errs.isEmpty()) {
+      return res.status(400).json({ errors: errs.array() });
+    }
+
     const { email, password } = req.body;
 
     const user = await User.findOne({
@@ -145,6 +160,11 @@ authenticationRouter.patch("/reset",
   body("password").isLength({ min: 8 }),
   body("token").notEmpty(),
   async (req, res) => {
+    const errs = validationResult(req);
+    if (!errs.isEmpty()) {
+      return res.status(400).json({ errors: errs.array() });
+    }
+
     const { email, password, token } = req.body;
 
     const passwordResetRequest = await PasswordReset.findOne({
