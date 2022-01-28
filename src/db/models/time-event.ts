@@ -2,7 +2,7 @@ import { Sequelize, DataTypes, Model, ModelAttributes } from "sequelize";
 import Category, { categoryPrimaryKey } from "./category";
 import User, { userPrimaryKey } from "./user";
 
-const modelName = "timeEvent";
+const modelName = "time_event";
 
 class TimeEvent extends Model { }
 

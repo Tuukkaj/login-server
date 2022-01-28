@@ -1,5 +1,7 @@
 import { Model, ModelAttributes, DataTypes, Sequelize } from "sequelize";
 
+const modelName = "password_reset"; 
+
 class PasswordReset extends Model { }
 
 export const passwordResetPrimaryKey = "uuid"; 
@@ -22,6 +24,7 @@ const columns: ModelAttributes = {
 
 export const passwordResetInit = (sequelize: Sequelize) => {
   PasswordReset.init(columns, {
+    modelName,
     sequelize
   });
 };

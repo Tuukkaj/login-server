@@ -17,7 +17,7 @@ class Mailer {
 
   init = async () => {
     this.transporter = nodeMailer.createTransport({
-      host: 'smtp.ethereal.email',
+      host: "smtp.ethereal.email",
       port: 587,
       auth: {
         user: process.env.SMTP_USER,
@@ -28,8 +28,8 @@ class Mailer {
     const verificationResult = await this.transporter.verify();
 
     if (!verificationResult) {
-      console.error("Failed to verify email connection")
-      process.exit(1)
+      console.error("Failed to verify email connection"); 
+      process.exit(1);
     }
   }
 }

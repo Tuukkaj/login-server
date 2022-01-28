@@ -1,6 +1,6 @@
 import { Model, ModelAttributes, DataTypes, Sequelize } from "sequelize";
 
-const modelName = "unverifiedUser";
+const modelName = "unverified_user";
 
 class UnverifiedUser extends Model { }
 
