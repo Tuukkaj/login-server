@@ -19,6 +19,9 @@
     "rules": {
         "quotes": "error",
         "semi": "warn",
-        "indent": ["error", 2]
+        "indent": [
+            "error",
+            2
+        ]
     }
 }

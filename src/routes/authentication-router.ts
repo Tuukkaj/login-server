@@ -6,13 +6,13 @@ import EmailService from "../services/email-service";
 import bcrypt from "bcrypt";
 import User, { UserInterface } from "../db/models/user";
 import PasswordReset, { PasswordResetInterface } from "../db/models/password-reset";
+import emailService from "../services/email-service";
 
 const authenticationRouter = express.Router();
 
 authenticationRouter.post("/sign",
   body("email").isEmail().normalizeEmail(),
   body("password").isLength({ min: 8 }),
-
   async (req, res) => {
     const errs = validationResult(req);
     if (!errs.isEmpty()) {
@@ -30,20 +30,20 @@ authenticationRouter.post("/sign",
 
     try {
       await UnverifiedUser.create(unverifiedUser);
+      await EmailService.sendSignUp(unverifiedUser.email, unverifiedUser.token);
+      console.info(`http://localhost:${process.env.PORT}/sign/verify/${unverifiedUser.token}`);
+
+      return res.status(201).send();
     } catch (e: unknown) {
       console.error("Failed to create unverifiedUser", e);
 
       if ((e as { name?: string })?.name === "SequelizeUniqueConstraintError") {
         return res.status(400).send(`Email ${email} has already signed up`);
-      } else {
-        return res.status(500).send();
       }
     }
 
-    await EmailService.sendSignUp(unverifiedUser.email, unverifiedUser.token);
-    console.info(`http://localhost:${process.env.PORT}/sign/verify/${unverifiedUser.token}`);
+    return res.status(500).send();
 
-    return res.status(201).send();
   });
 
 authenticationRouter.get("/sign/verify/:token",
@@ -66,9 +66,15 @@ authenticationRouter.get("/sign/verify/:token",
       password: verifiedUser.get().password
     };
 
-    User.create(user);
+    await UnverifiedUser.destroy({
+      where: {
+        token
+      }
+    });
 
-    return res.status(200).json({result: "ok"});
+    await User.create(user);
+
+    return res.status(200).send();
   });
 
 authenticationRouter.get("/forgot/:email",
@@ -81,18 +87,33 @@ authenticationRouter.get("/forgot/:email",
       uuid: crypto.randomUUID()
     };
 
-    try {
-      await PasswordReset.create(passwordReset);
-    } catch (e) {
-      console.error("Failed to reset password", e);
-      return res.status(200);
+    const user = await User.findOne({ where: { email } });
 
+    if (!user) {
+      console.warn(`Non-existant email ${email} tried to be reset`);
+      return res.sendStatus(200);
     }
 
-    return res.status(200);
+    try {
+      const prevResetReq = await PasswordReset.findOne({
+        where: {
+          email: email
+        }
+      });
+
+      await prevResetReq?.destroy();
+
+      const resetReq = await PasswordReset.create(passwordReset);
+      emailService.sendForgotPassword(email, resetReq.get().token);
+
+    } catch (e) {
+      console.error("Failed to reset password", e);
+    }
+
+    return res.status(200).send();
   });
 
-authenticationRouter.post("/sign/test",
+authenticationRouter.post("/login",
   body("email").isEmail().normalizeEmail(),
   body("password").isLength({ min: 8 }),
   async (req, res) => {
@@ -118,5 +139,39 @@ authenticationRouter.post("/sign/test",
       return res.status(401).send();
     }
   });
+
+authenticationRouter.patch("/reset",
+  body("email").isEmail().normalizeEmail(),
+  body("password").isLength({ min: 8 }),
+  body("token").notEmpty(),
+  async (req, res) => {
+    const { email, password, token } = req.body;
+
+    const passwordResetRequest = await PasswordReset.findOne({
+      where: {
+        email,
+        token
+      }
+    });
+
+    if (!passwordResetRequest) {
+      return res.status(400).send();
+    }
+
+    passwordResetRequest.destroy();
+
+    const user = await User.findOne({
+      where: {
+        email: email
+      }
+    });
+
+    user?.set("password", await bcrypt.hash(password, 10));
+
+    await user?.save();
+
+    return res.status(200).send();
+  }
+);
 
 export default authenticationRouter;

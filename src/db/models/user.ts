@@ -5,7 +5,7 @@ const modelName = "user";
 
 class User extends Model { }
 
-export const userPrimaryKey = "uuid"; 
+export const userPrimaryKey = "uuid";
 
 const columns: ModelAttributes = {
   [userPrimaryKey]: {
@@ -14,10 +14,11 @@ const columns: ModelAttributes = {
   },
   email: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    unique: true
   },
   password: {
-    type: DataTypes.STRING, 
+    type: DataTypes.STRING,
     allowNull: false
   }
 };

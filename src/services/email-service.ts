@@ -9,9 +9,17 @@ class Mailer {
 
   sendSignUp = async (to: string, token: string): Promise<void> => {
     await this.transporter?.sendMail({
-      to,
+      to: process.env.SMTP_USER, // to, For dev usage until real SMTP server is completed.
       subject: "Quacker Verify email",
       html: `<a href="http://localhost:${process.env.PORT}/authentication/sign/verify/${token}">Verify</a>`
+    });
+  }
+
+  sendForgotPassword = async (to: string, token: string) => {
+    await this.transporter?.sendMail({
+      to: process.env.SMTP_USER, // to, For dev usage until real SMTP server is completed.
+      subject: "Quacker reset password",
+      html: `Password reset - token: ${token} email: ${to}`
     });
   }
 
@@ -28,10 +36,10 @@ class Mailer {
     const verificationResult = await this.transporter.verify();
 
     if (!verificationResult) {
-      console.error("Failed to verify email connection"); 
+      console.error("Failed to verify email connection");
       process.exit(1);
     }
   }
 }
 
-export default new Mailer(); 
+export default new Mailer();
