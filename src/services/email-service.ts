@@ -4,14 +4,18 @@ interface EmailResponse {
   messageId: string
 }
 
+
 class Mailer {
   private transporter: Transporter | undefined;
+  private host: string | undefined;
 
   sendSignUp = async (to: string, token: string): Promise<void> => {
+    console.info(`${this.host}/authentication/sign/verify/${token}`);
+
     await this.transporter?.sendMail({
       to: process.env.SMTP_USER, // to, For dev usage until real SMTP server is completed.
       subject: "Quacker Verify email",
-      html: `<a href="http://localhost:${process.env.PORT}/authentication/sign/verify/${token}">Verify</a>`
+      html: `<a href="${this.host}/authentication/sign/verify/${token}">Verify</a>`
     });
   }
 
@@ -24,6 +28,8 @@ class Mailer {
   }
 
   init = async () => {
+    this.host = process.env.NODE_ENV === "production" ? process.env.HOST : `http://localhost:${process.env.PORT}`;
+
     this.transporter = nodeMailer.createTransport({
       host: "smtp.ethereal.email",
       port: 587,

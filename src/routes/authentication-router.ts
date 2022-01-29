@@ -31,7 +31,6 @@ authenticationRouter.post("/sign",
     try {
       await UnverifiedUser.create(unverifiedUser);
       await EmailService.sendSignUp(unverifiedUser.email, unverifiedUser.token);
-      console.info(`http://localhost:${process.env.PORT}/sign/verify/${unverifiedUser.token}`);
 
       return res.status(201).send();
     } catch (e: unknown) {

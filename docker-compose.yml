@@ -1,0 +1,36 @@
+# docker-compose.yml
+version: "3"
+services:
+  app:
+    container_name: quacker-server
+    working_dir: /home/quacker/
+    build: ./
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src:/home/quacker/src
+    command: npm run watch
+    environment:
+      - NODE_ENV=dev
+      - PORT=8080
+
+  postgres:
+    container_name: db
+    image: postgres:12-alpine
+    volumes:
+      - db:/home/postgres
+    ports:
+      - "4000:5432"
+    expose:
+      - 5432
+    environment:
+      POSTGRES_DB: quacker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+volumes:
+  db: 
+    driver: local
+

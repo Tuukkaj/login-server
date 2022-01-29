@@ -12,8 +12,14 @@ export default {
     if (sequelize) {
       console.error("DB connection has already been initialized");
     }
-
-    sequelize = new Sequelize(`postgres://${process.env.DB_USERNAME}:${process.env.DB_USERNAME}@${process.env.DB_URL}:${process.env.DB_PORT}/${process.env.DB_NAME}`);
+    
+    sequelize = new Sequelize(`postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_URL}:${process.env.DB_PORT}/${process.env.DB_NAME}`, {
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false
+        }
+    }});
 
     try {
       await sequelize.authenticate();
