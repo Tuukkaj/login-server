@@ -12,13 +12,13 @@ export default {
     if (sequelize) {
       console.error("DB connection has already been initialized");
     }
-    
-    sequelize = new Sequelize(`postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_URL}:${process.env.DB_PORT}/${process.env.DB_NAME}`, {
+
+    sequelize = new Sequelize(String(process.env.DATABASE_URL!), {
       dialectOptions: {
-        ssl: {
+        ssl: process.env.NODE_ENV === "production" ? {
           require: true,
           rejectUnauthorized: false
-        }
+        } : false
     }});
 
     try {

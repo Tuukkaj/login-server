@@ -4,10 +4,8 @@ const modelName = "password_reset";
 
 class PasswordReset extends Model { }
 
-export const passwordResetPrimaryKey = "uuid"; 
-
 const columns: ModelAttributes = {
-  [passwordResetPrimaryKey]: {
+  uuid: {
     type: DataTypes.UUID,
     primaryKey: true
   },
@@ -31,7 +29,7 @@ export const passwordResetInit = (sequelize: Sequelize) => {
 
 
 export interface PasswordResetInterface {
-  [passwordResetPrimaryKey]: string
+  uuid: string
   email: string,
   token: string
 }

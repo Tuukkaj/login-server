@@ -1,6 +1,6 @@
 import { Sequelize, DataTypes, Model, ModelAttributes } from "sequelize";
 import Category, { categoryPrimaryKey } from "./category";
-import User, { userPrimaryKey } from "./user";
+import User from "./user";
 
 const modelName = "time_event";
 
@@ -36,7 +36,7 @@ const columns: ModelAttributes = {
     allowNull: false,
     references: {
       model: User,
-      key: userPrimaryKey
+      key: "uuid"
     }
   }
 };

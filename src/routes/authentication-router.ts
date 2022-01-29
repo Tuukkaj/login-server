@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 import User, { UserInterface } from "../db/models/user";
 import PasswordReset, { PasswordResetInterface } from "../db/models/password-reset";
 import emailService from "../services/email-service";
+import jwt from "jsonwebtoken";
 
 const authenticationRouter = express.Router();
 
@@ -145,7 +146,9 @@ authenticationRouter.post("/login",
 
     try {
       if (await bcrypt.compare(password, user.get().password)) {
-        return res.status(200).send("Login OK");
+        return jwt.sign({
+          uuid: user.get().uuid
+        }, process.env.PUBLIC_ACCESS_KEY!); 
       }
 
       return res.status(401).send();

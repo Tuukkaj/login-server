@@ -1,14 +1,11 @@
-import { PassportCountryCode } from "express-validator/src/options";
 import { Model, ModelAttributes, DataTypes, Sequelize } from "sequelize";
 
 const modelName = "user";
 
 class User extends Model { }
 
-export const userPrimaryKey = "uuid";
-
 const columns: ModelAttributes = {
-  [userPrimaryKey]: {
+  uuid: {
     type: DataTypes.UUID,
     primaryKey: true
   },

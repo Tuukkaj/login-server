@@ -15,6 +15,12 @@ services:
     environment:
       - NODE_ENV=dev
       - PORT=8080
+      - PUBLIC_ACCESS_KEY=0a10a9ac709e44eeccf1d34cea633ca3c2d7bdd9763ce498a6afdd8c948277bbe9827af004b3a556341691e0bb3004ba0327f3f6fb5a89bf248869683a81eaeb
+      - PRIVATE_ACCESS_KEY=b065edae4956adfac7583ee182052312525e655da63db9888aa190316659fec82f426a4299a44345cb44b57a0bb39bc678aee66678412f6f38bd6245a2500bcc
+      - DATABASE_URL=postgres://quacker_admin:admin@db:5432/quacker
+      - HOST=localhost:8080
+      - SMTP_USER=erin.lesch18@ethereal.email
+      - SMTP_PASS=DN4BT2H2yZKr7zXtKE
 
   postgres:
     container_name: db
@@ -27,10 +33,9 @@ services:
       - 5432
     environment:
       POSTGRES_DB: quacker
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: quacker_admin
+      POSTGRES_PASSWORD: admin
 
 volumes:
   db: 
     driver: local
-

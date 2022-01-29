@@ -1,5 +1,5 @@
 import { Model, ModelAttributes, DataTypes, Sequelize } from "sequelize";
-import User, { userPrimaryKey } from "./user";
+import User from "./user";
 
 const modelName = "category";
 
@@ -21,7 +21,7 @@ const columns: ModelAttributes = {
     allowNull: false,
     references: {
       model: User,
-      key: userPrimaryKey
+      key: "uuid"
     }
   },
   icon: {

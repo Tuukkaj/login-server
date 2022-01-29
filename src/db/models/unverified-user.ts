@@ -4,10 +4,8 @@ const modelName = "unverified_user";
 
 class UnverifiedUser extends Model { }
 
-export const unverifiedUserPrimaryKey = "uuid"; 
-
 const columns: ModelAttributes = {
-  [unverifiedUserPrimaryKey]: {
+  uuid: {
     type: DataTypes.UUID,
     primaryKey: true
   },
@@ -35,7 +33,7 @@ export const unverifiedUserInit = (sequelize: Sequelize) => {
 
 
 export interface UnverifiedUserInterface {
-  [unverifiedUserPrimaryKey]: string
+  uuid: string
   email: string,
   password: string, 
   token: string

@@ -1,16 +1,13 @@
 import express from "express";
-import dotenv from "dotenv";
 import timeEventRouter from "./routes/time-event-router";
 import dbConnection from "./db/db-connection";
 import authenticationRouter from "./routes/authentication-router";
 import EmailService from "./services/email-service";
 
-(async () => {
-  dotenv.config();
-
+(async () => {  
   await dbConnection.init();
   
-  EmailService.init(); 
+  await EmailService.init(); 
 
   const app = express();
 
