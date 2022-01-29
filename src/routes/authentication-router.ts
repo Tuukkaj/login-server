@@ -1,5 +1,5 @@
 import express from "express";
-import { body, validationResult } from "express-validator";
+import { body } from "express-validator";
 import UnverifiedUser, { UnverifiedUserInterface } from "../db/models/unverified-user";
 import crypto from "crypto";
 import EmailService from "../services/email-service";
@@ -8,18 +8,16 @@ import User, { UserInterface } from "../db/models/user";
 import PasswordReset, { PasswordResetInterface } from "../db/models/password-reset";
 import emailService from "../services/email-service";
 import jwt from "jsonwebtoken";
+import errorValidatorMiddleware from "../middlewares/error-validator-middleware";
+
 
 const authenticationRouter = express.Router();
 
 authenticationRouter.post("/sign",
   body("email").isEmail().normalizeEmail(),
   body("password").isLength({ min: 8 }),
+  errorValidatorMiddleware,
   async (req, res) => {
-    const errs = validationResult(req);
-    if (!errs.isEmpty()) {
-      return res.status(400).json({ errors: errs.array() });
-    }
-
     const { email, password } = req.body;
 
     const unverifiedUser: UnverifiedUserInterface = {
@@ -48,11 +46,6 @@ authenticationRouter.post("/sign",
 
 authenticationRouter.get("/sign/verify/:token",
   async (req, res) => {
-    const errs = validationResult(req);
-    if (!errs.isEmpty()) {
-      return res.status(400).json({ errors: errs.array() });
-    }
-
     const { token } = req.params;
 
     const verifiedUser = await UnverifiedUser.findOne({
@@ -84,11 +77,6 @@ authenticationRouter.get("/sign/verify/:token",
 
 authenticationRouter.get("/forgot/:email",
   async (req, res) => {
-    const errs = validationResult(req);
-    if (!errs.isEmpty()) {
-      return res.status(400).json({ errors: errs.array() });
-    }
-
     const { email } = req.params;
 
     const passwordReset: PasswordResetInterface = {
@@ -126,12 +114,8 @@ authenticationRouter.get("/forgot/:email",
 authenticationRouter.post("/login",
   body("email").isEmail().normalizeEmail(),
   body("password").isLength({ min: 8 }),
+  errorValidatorMiddleware,
   async (req, res) => {
-    const errs = validationResult(req);
-    if (!errs.isEmpty()) {
-      return res.status(400).json({ errors: errs.array() });
-    }
-
     const { email, password } = req.body;
 
     const user = await User.findOne({
@@ -139,16 +123,16 @@ authenticationRouter.post("/login",
         email
       }
     });
-
+    
     if (!user) {
       return res.status(401).send();
     }
 
     try {
       if (await bcrypt.compare(password, user.get().password)) {
-        return jwt.sign({
+        return res.send(jwt.sign({
           uuid: user.get().uuid
-        }, process.env.PUBLIC_ACCESS_KEY!); 
+        }, process.env.PUBLIC_ACCESS_KEY!))
       }
 
       return res.status(401).send();
@@ -161,12 +145,8 @@ authenticationRouter.patch("/reset",
   body("email").isEmail().normalizeEmail(),
   body("password").isLength({ min: 8 }),
   body("token").notEmpty(),
+  errorValidatorMiddleware,
   async (req, res) => {
-    const errs = validationResult(req);
-    if (!errs.isEmpty()) {
-      return res.status(400).json({ errors: errs.array() });
-    }
-
     const { email, password, token } = req.body;
 
     const passwordResetRequest = await PasswordReset.findOne({
