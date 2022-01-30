@@ -1,5 +1,5 @@
 {
-  "name": "quacker-server",
+  "name": "login-server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

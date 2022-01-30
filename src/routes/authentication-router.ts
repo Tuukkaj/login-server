@@ -138,7 +138,7 @@ authenticationRouter.post("/login",
           process.env.PRIVATE_ACCESS_KEY || "",
           {
             expiresIn: "2m",
-            issuer: "quacker"
+            issuer: "login"
           });
 
 

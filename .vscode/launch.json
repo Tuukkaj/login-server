@@ -19,7 +19,7 @@
             "restart": true,
             "port": 9229,
             "localRoot": "${workspaceFolder}/",
-            "remoteRoot": "/home/quacker/",
+            "remoteRoot": "/home/login-server/",
             "protocol": "inspector"
         }
     ]

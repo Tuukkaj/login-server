@@ -14,7 +14,7 @@ class Mailer {
 
     await this.transporter?.sendMail({
       to: process.env.SMTP_USER, // to, For dev usage until real SMTP server is completed.
-      subject: "Quacker Verify email",
+      subject: "Login Verify email",
       html: `<a href="${this.host}/authentication/sign/verify/${token}">Verify</a>`
     });
   }
@@ -22,7 +22,7 @@ class Mailer {
   sendForgotPassword = async (to: string, token: string) => {
     await this.transporter?.sendMail({
       to: process.env.SMTP_USER, // to, For dev usage until real SMTP server is completed.
-      subject: "Quacker reset password",
+      subject: "Login reset password",
       html: `Password reset - token: ${token} email: ${to}`
     });
   }

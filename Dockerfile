@@ -1,6 +1,6 @@
 FROM node:17
 
-WORKDIR /home/quacker/
+WORKDIR /home/login-server/
 COPY package*.json ./
 
 RUN npm install
