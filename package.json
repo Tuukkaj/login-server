@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b",
-    "watch": "tsc-watch --onSuccess \"node ./.dist/server.js\" --sourceMap"
+    "watch": "tsc-watch --onSuccess \"node --inspect=0.0.0.0 ./.dist/server.js \" --sourceMap"
   },
   "author": "",
   "license": "ISC",

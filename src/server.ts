@@ -3,18 +3,19 @@ import timeEventRouter from "./routes/time-event-router";
 import dbConnection from "./db/db-connection";
 import authenticationRouter from "./routes/authentication-router";
 import EmailService from "./services/email-service";
+import jwtAuthenticationMiddleware from "./middlewares/jwt-authentication-middleware";
 
-(async () => {  
+(async () => {
   await dbConnection.init();
-  
-  await EmailService.init(); 
+
+  await EmailService.init();
 
   const app = express();
 
-  app.use(express.json()); 
+  app.use(express.json());
 
-  app.use("/time", timeEventRouter);
-  app.use("/authentication", authenticationRouter); 
+  app.use("/time", jwtAuthenticationMiddleware, timeEventRouter);
+  app.use("/authentication", authenticationRouter);
 
   app.listen(process.env.PORT, () => console.log("🦻🏼 Listening to port " + process.env.PORT));
 })();

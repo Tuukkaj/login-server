@@ -123,16 +123,26 @@ authenticationRouter.post("/login",
         email
       }
     });
-    
+
     if (!user) {
       return res.status(401).send();
     }
 
     try {
       if (await bcrypt.compare(password, user.get().password)) {
-        return res.send(jwt.sign({
-          uuid: user.get().uuid
-        }, process.env.PUBLIC_ACCESS_KEY!))
+        const token = jwt.sign(
+          {
+            uuid: user.get().uuid,
+            email: user.get().email
+          },
+          process.env.PRIVATE_ACCESS_KEY || "",
+          {
+            expiresIn: "2m",
+            issuer: "quacker"
+          });
+
+
+        return res.send(token);
       }
 
       return res.status(401).send();

@@ -9,6 +9,7 @@ services:
       - postgres
     ports:
       - "8080:8080"
+      - "9229:9229"
     volumes:
       - ./src:/home/quacker/src
     command: npm run watch
@@ -37,5 +38,5 @@ services:
       POSTGRES_PASSWORD: admin
 
 volumes:
-  db: 
+  db:
     driver: local

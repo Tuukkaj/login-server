@@ -17,11 +17,20 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "quotes": "error",
-        "semi": "warn",
+        "quotes": [
+            "error",
+            "double"
+        ],
+        "semi": "error",
         "indent": [
             "error",
             2
+        ],
+        "max-len": [
+            "error",
+            {
+                "code": 120
+            }
         ]
     }
 }
