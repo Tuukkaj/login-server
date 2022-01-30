@@ -13,13 +13,14 @@ export default {
       console.error("DB connection has already been initialized");
     }
 
-    sequelize = new Sequelize(String(process.env.DATABASE_URL!), {
+    sequelize = new Sequelize(String(process.env.DATABASE_URL || ""), {
       dialectOptions: {
         ssl: process.env.NODE_ENV === "production" ? {
           require: true,
           rejectUnauthorized: false
         } : false
-    }});
+      }
+    });
 
     try {
       await sequelize.authenticate();
