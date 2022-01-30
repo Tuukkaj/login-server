@@ -1,7 +1,6 @@
 import { Sequelize } from "sequelize";
 import { categoryModelInit } from "./models/category";
 import { passwordResetInit } from "./models/password-reset";
-import { timeEventModelInit } from "./models/time-event";
 import { unverifiedUserInit } from "./models/unverified-user";
 import { userModelInit } from "./models/user";
 
@@ -34,7 +33,6 @@ export default {
     unverifiedUserInit(sequelize);
     userModelInit(sequelize);
     categoryModelInit(sequelize);
-    timeEventModelInit(sequelize);
 
     await sequelize.sync({});
 

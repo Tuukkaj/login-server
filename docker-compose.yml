@@ -7,6 +7,7 @@ services:
     build: ./
     depends_on:
       - postgres
+      - redis
     ports:
       - "8080:8080"
       - "9229:9229"
@@ -16,12 +17,13 @@ services:
     environment:
       - NODE_ENV=dev
       - PORT=8080
-      - PUBLIC_ACCESS_KEY=0a10a9ac709e44eeccf1d34cea633ca3c2d7bdd9763ce498a6afdd8c948277bbe9827af004b3a556341691e0bb3004ba0327f3f6fb5a89bf248869683a81eaeb
-      - PRIVATE_ACCESS_KEY=b065edae4956adfac7583ee182052312525e655da63db9888aa190316659fec82f426a4299a44345cb44b57a0bb39bc678aee66678412f6f38bd6245a2500bcc
+      - TOKEN_KEY=0a10a9ac709e44eeccf1d34cea633ca3c2d7bdd9763ce498a6afdd8c948277bbe9827af004b3a556341691e0bb3004ba0327f3f6fb5a89bf248869683a81eaeb
+      - REFRESH_TOKEN_KEY=b065edae4956adfac7583ee182052312525e655da63db9888aa190316659fec82f426a4299a44345cb44b57a0bb39bc678aee66678412f6f38bd6245a2500bcc
       - DATABASE_URL=postgres://login_admin:admin@db:5432/login
       - HOST=localhost:8080
       - SMTP_USER=erin.lesch18@ethereal.email
       - SMTP_PASS=DN4BT2H2yZKr7zXtKE
+      - REDIS_URL=redis://:cache_pass@cache:6379/0
 
   postgres:
     container_name: db
@@ -36,7 +38,22 @@ services:
       POSTGRES_DB: login
       POSTGRES_USER: login_admin
       POSTGRES_PASSWORD: admin
+      REDIS_HOST: cache
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: cache_pass
+
+  redis:
+    container_name: cache
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass cache_pass
+    volumes:
+      - cache:/home/redis
 
 volumes:
   db:
+    driver: local
+  cache:
     driver: local

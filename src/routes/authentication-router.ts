@@ -7,8 +7,11 @@ import bcrypt from "bcrypt";
 import User, { UserInterface } from "../db/models/user";
 import PasswordReset, { PasswordResetInterface } from "../db/models/password-reset";
 import emailService from "../services/email-service";
-import jwt from "jsonwebtoken";
 import errorValidatorMiddleware from "../middlewares/error-validator-middleware";
+import refreshTokenCache from "../cache/caches/refresh_token_cache";
+import checkJwt from "../util/check-jwt";
+import createAuthJwt from "../util/create-auth-jwt";
+import createRefreshToken from "../util/create-refresh-token";
 
 
 const authenticationRouter = express.Router();
@@ -130,24 +133,57 @@ authenticationRouter.post("/login",
 
     try {
       if (await bcrypt.compare(password, user.get().password)) {
-        const token = jwt.sign(
-          {
-            uuid: user.get().uuid,
-            email: user.get().email
-          },
-          process.env.PRIVATE_ACCESS_KEY || "",
-          {
-            expiresIn: "2m",
-            issuer: "login"
-          });
 
+        const token = createAuthJwt(user.get().uuid, user.get().email);
+        const refreshToken = createRefreshToken(user.get().uuid, user.get().email);
 
-        return res.send(token);
+        await refreshTokenCache.addRefreshToken(user.get().uuid, refreshToken);
+
+        return res.json({ token, refreshToken });
       }
 
       return res.status(401).send();
     } catch (e) {
       return res.status(401).send();
+    }
+  });
+
+authenticationRouter.post("/token",
+  body("refreshToken").notEmpty(),
+  errorValidatorMiddleware,
+  async (req, res) => {
+    const { refreshToken } = req.body;
+
+    try {
+      const payload = await checkJwt(refreshToken, process.env.REFRESH_TOKEN_KEY || "");
+      const foundToken = await refreshTokenCache.getRefreshToken(payload.uuid);
+
+      if (typeof foundToken !== "string") {
+        return res.sendStatus(403);
+      }
+
+      const token = createAuthJwt(payload.uuid, payload.email);
+
+      return res.json({ token });
+    } catch (e) {
+      return res.sendStatus(e as number || 400);
+    }
+  });
+
+authenticationRouter.post("/logout",
+  body("token").notEmpty(),
+  errorValidatorMiddleware,
+  async (req, res) => {
+    const { token } = req.body;
+
+    try {
+      const payload = await checkJwt(token, process.env.TOKEN_KEY || "");
+
+      await refreshTokenCache.deleteRefreshToken(payload.uuid);
+
+      return res.sendStatus(204);
+    } catch (e) {
+      return res.sendStatus(e as number || 400);
     }
   });
 
