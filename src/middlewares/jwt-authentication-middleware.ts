@@ -9,7 +9,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
   }
 
   try {
-    const jwtResult = await checkJwt(authorization || "", process.env.TOKEN_KEY || "");
+    const jwtResult = await checkJwt(authorization.split(" ")[1], process.env.TOKEN_KEY || "");
 
     req.user = jwtResult;
     next();
