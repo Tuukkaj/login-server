@@ -5,6 +5,9 @@ import authenticationRouter from "./routes/authentication-router";
 import EmailService from "./services/email-service";
 import jwtAuthenticationMiddleware from "./middlewares/jwt-authentication-middleware";
 import cacheConnection from "./cache/cache_connection";
+import cors from "cors";
+import helmet from "helmet";
+import cookieParser from "cookie-parser";
 
 (async () => {
   await cacheConnection.init();
@@ -14,6 +17,12 @@ import cacheConnection from "./cache/cache_connection";
 
   const app = express();
 
+  app.use(cookieParser());
+
+  app.use(cors({
+    origin: "http://cookie.com"
+  }));
+  app.use(helmet());
   app.use(express.json());
 
   app.use("/test", jwtAuthenticationMiddleware, testRouter);

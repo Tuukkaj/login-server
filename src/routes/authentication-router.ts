@@ -1,5 +1,5 @@
 import express from "express";
-import { body } from "express-validator";
+import { body, cookie } from "express-validator";
 import UnverifiedUser, { UnverifiedUserInterface } from "../db/models/unverified-user";
 import crypto from "crypto";
 import EmailService from "../services/email-service";
@@ -139,7 +139,16 @@ authenticationRouter.post("/login",
 
         await refreshTokenCache.addRefreshToken(user.get().uuid, refreshToken);
 
-        return res.json({ token, refreshToken });
+        const dt = new Date(); 
+        dt.setHours(dt.getHours() + 72);
+        res.cookie("refreshToken", refreshToken, {
+          secure: process.env.NODE_ENV !== "dev",
+          httpOnly: true,
+          expires: dt,
+          sameSite: true
+        });
+
+        return res.json({token});
       }
 
       return res.status(401).send();
@@ -149,11 +158,11 @@ authenticationRouter.post("/login",
   });
 
 authenticationRouter.post("/token",
-  body("refreshToken").notEmpty(),
+  cookie("refreshToken").notEmpty(),
   errorValidatorMiddleware,
   async (req, res) => {
-    const { refreshToken } = req.body;
-
+    const { refreshToken } = req.cookies;
+    console.dir(req.cookies);
     try {
       const payload = await checkJwt(refreshToken, process.env.REFRESH_TOKEN_KEY || "");
       const foundToken = await refreshTokenCache.getRefreshToken(payload.uuid);
