@@ -10,7 +10,7 @@ import emailService from "../services/email-service";
 import errorValidatorMiddleware from "../middlewares/error-validator-middleware";
 import refreshTokenCache from "../cache/caches/refresh_token_cache";
 import checkJwt from "../util/check-jwt";
-import createAuthJwt from "../util/create-auth-jwt";
+import createAccessToken from "../util/create-access-token";
 import createRefreshToken from "../util/create-refresh-token";
 
 
@@ -134,21 +134,12 @@ authenticationRouter.post("/login",
     try {
       if (await bcrypt.compare(password, user.get().password)) {
 
-        const token = createAuthJwt(user.get().uuid, user.get().email);
+        const accessToken = createAccessToken(user.get().uuid, user.get().email);
         const refreshToken = createRefreshToken(user.get().uuid, user.get().email);
 
         await refreshTokenCache.addRefreshToken(user.get().uuid, refreshToken);
 
-        const dt = new Date(); 
-        dt.setHours(dt.getHours() + 72);
-        res.cookie("refreshToken", refreshToken, {
-          secure: process.env.NODE_ENV !== "dev",
-          httpOnly: true,
-          expires: dt,
-          sameSite: true
-        });
-
-        return res.json({token});
+        return res.json({ accessToken, refreshToken});
       }
 
       return res.status(401).send();
@@ -171,9 +162,9 @@ authenticationRouter.post("/token",
         return res.sendStatus(403);
       }
 
-      const token = createAuthJwt(payload.uuid, payload.email);
+      const accessToken = createAccessToken(payload.uuid, payload.email);
 
-      return res.json({ token });
+      return res.json({ token: accessToken });
     } catch (e) {
       return res.sendStatus(e as number || 400);
     }

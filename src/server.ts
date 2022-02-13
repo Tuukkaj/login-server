@@ -20,7 +20,7 @@ import cookieParser from "cookie-parser";
   app.use(cookieParser());
 
   app.use(cors({
-    origin: "http://cookie.com"
+    origin: process.env.CLIENTS?.split(",")
   }));
   app.use(helmet());
   app.use(express.json());

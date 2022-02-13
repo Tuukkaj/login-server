@@ -24,7 +24,7 @@ services:
       - SMTP_USER=erin.lesch18@ethereal.email
       - SMTP_PASS=DN4BT2H2yZKr7zXtKE
       - REDIS_URL=redis://:cache_pass@cache:6379/0
-      - CLIENTS=https://google.com
+      - CLIENTS=http://localhost:3000
 
   postgres:
     container_name: db
