@@ -14,7 +14,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     req.user = jwtResult;
     next();
   } catch (e) {
-    return res.sendStatus(e as number || 400);
+    return res.sendStatus(401);
   }
 };
 
