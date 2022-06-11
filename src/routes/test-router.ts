@@ -2,7 +2,7 @@ import express from "express";
 
 const testRouter = express.Router();
 
-testRouter.get("/", (req, res) => {
+testRouter.post("/", (req, res) => {
   return res.send("OK");
 });
 

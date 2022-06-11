@@ -7,7 +7,6 @@ import jwtAuthenticationMiddleware from "./middlewares/jwt-authentication-middle
 import cacheConnection from "./cache/cache_connection";
 import cors from "cors";
 import helmet from "helmet";
-import cookieParser from "cookie-parser";
 
 (async () => {
   await cacheConnection.init();
@@ -16,8 +15,6 @@ import cookieParser from "cookie-parser";
   await EmailService.init();
 
   const app = express();
-
-  app.use(cookieParser());
 
   app.use(cors({
     origin: process.env.CLIENTS?.split(",")
