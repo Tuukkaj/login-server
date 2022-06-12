@@ -78,7 +78,7 @@ authenticationRouter.get("/sign/verify/:token",
     return res.status(200).send();
   });
 
-authenticationRouter.get("/forgot/:email",
+authenticationRouter.put("/forgot/:email",
   async (req, res) => {
     const { email } = req.params;
 
